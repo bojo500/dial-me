@@ -14,5 +14,8 @@ export class User  extends CoreEntity{
   @Column()
   password: string;
 
+  @Column()
+  phoneNumber: string;
+
 }
 
