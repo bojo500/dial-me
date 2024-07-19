@@ -14,6 +14,15 @@ export class TwilioController {
     return { sid };
   }
 
+  @Post('make-call')
+  async makeCall(
+    @Body('to') to: string,
+    @Body('from') from: string,
+    @Body('url') url: string,
+  ): Promise<{ sid: string }> {
+    const sid = await this.twilioService.makeCall(to, from, url);
+    return { sid };
+  }
 
   @Post('create-call')
   async createCall(

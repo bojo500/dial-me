@@ -1,4 +1,3 @@
-
 import { Injectable, Logger } from '@nestjs/common';
 import * as Twilio from 'twilio';
 
@@ -24,19 +23,30 @@ export class TwilioService {
     this.client = Twilio(accountSid, authToken);
   }
 
-async sendSms(to: string, body: string): Promise<string> {
-  try {
-    const message = await this.client.messages.create({
-      body,
-      from: this.fromPhoneNumber,
-      to,
-    });
-    return message.sid;
-  } catch (error) {
-    this.logger.error(`Failed to send SMS: ${error.message}`);
-    throw new Error(`Failed to send SMS: ${error.message}`);
+  async sendSms(to: string, body: string): Promise<string> {
+    try {
+      const message = await this.client.messages.create({
+        body,
+        from: this.fromPhoneNumber,
+        to,
+      });
+      return message.sid;
+    } catch (error) {
+      this.logger.error(`Failed to send SMS: ${error.message}`);
+      throw new Error(`Failed to send SMS: ${error.message}`);
+    }
   }
-}
+
+
+  async makeCall(to: string, from: string, url: string): Promise<string> {
+    const call = await this.client.calls.create({
+      to,
+      from,
+      url,
+    });
+    return call.sid;
+  }
+
 
   async createCall(to: string, url: string): Promise<string> {
     try {
@@ -45,7 +55,6 @@ async sendSms(to: string, body: string): Promise<string> {
         to,
         url,
       });
-      console.log(call,to , url);
       return call.sid;
     } catch (error) {
       this.logger.error(`Failed to create call: ${error.message}`);
@@ -53,3 +62,4 @@ async sendSms(to: string, body: string): Promise<string> {
     }
   }
 }
+
