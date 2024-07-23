@@ -5,7 +5,7 @@ import {
   InternalServerErrorException,
   NotFoundException
 } from "@nestjs/common";
-import { CreateUserDto, UpdateUserDto } from "./dto";
+import { CreateUserDto } from "./dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./entities";
 import { Repository } from "typeorm";
@@ -27,24 +27,44 @@ export class UsersService {
     };
   }
 
-  findAll() {
-    return this.repository.find();
-  }
-
-  findOne(id: number) {
-    return this.repository.findOne({ where:{id}});
-  }
-
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: Partial<User>) {
+    const user = await this.repository.findOne({ where:{id} });
+    if (!user) {
+      throw new InternalServerErrorException('User not found');
+    }
+    Object.assign(user, updateUserDto);
     try {
-      await this.repository.save({ ...updateUserDto, id });
-    } catch {
-      throw new InternalServerErrorException();
+      await this.repository.save(user);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw new InternalServerErrorException('Failed to update user');
     }
     return {
       message: 'Updated Successfully',
       statusCode: HttpStatus.OK,
     };
+  }
+
+  async findOne(id: number): Promise<User> {
+    return await this.repository.findOne({ where:{id} });
+  }
+
+  async findOneByOtp(otp: string): Promise<User> {
+    return await this.repository.findOne({ where: { otp } });
+  }
+
+  async updatePhoneNumberAndOtp(userId: number, phoneNumber: string, otp: string): Promise<User> {
+    let user = await this.repository.findOne({ where: { id: userId } });
+    if (user) {
+      user.phoneNumber = phoneNumber;
+      user.otp = otp;
+      return await this.repository.save(user);
+    }
+    throw new Error('User not found');
+  }
+
+  findAll() {
+    return this.repository.find();
   }
 
   async remove(id: number) {
@@ -63,7 +83,6 @@ export class UsersService {
     };
   }
 
-
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     const user = await this.repository.save(createUserDto);
     if (!user) {
@@ -71,7 +90,6 @@ export class UsersService {
     }
     return user;
   }
-
 
   async findOneByEmail(email: string): Promise<User> {
     return this.repository.findOne({where:{email}});

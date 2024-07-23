@@ -14,8 +14,11 @@ export class User  extends CoreEntity{
   @Column()
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   phoneNumber: string;
+
+  @Column({ nullable: true })
+  otp: string;
 
 }
 

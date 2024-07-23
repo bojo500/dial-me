@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import {features } from "./index";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./users/entities";
+import { Otp } from "./twilio/entities";
+
 
 @Module({
   imports: [
@@ -14,7 +16,7 @@ import { User } from "./users/entities";
       username: 'root',
       password: 'password',
       database: 'dialDB',
-      entities: [User],
+      entities: [User,Otp],
       synchronize: true,
     }),
     ...features,
