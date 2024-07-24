@@ -3,8 +3,10 @@ import { AuthService } from "./auth.service";
 import { User } from "../users/entities";
 import { RegisterDto } from "../users/dto";
 import { JwtAuthGuard, LocalAuthGuard } from "./guards";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 @Controller("auth")
+@ApiTags('Auth 🔒')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -14,8 +16,10 @@ export class AuthController {
    * @param body
    */
   @Post('login')
-  @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @UseGuards(LocalAuthGuard)
+  @ApiOperation({summary: 'Log in', description: 'User login; returns a JWT token on success'})
+  @ApiResponse({status: HttpStatus.OK, description: 'Success!'})
   public async login(@Request() req, @Body() body): Promise<User> {
     console.log({reqUser : req.user})
     console.log({body})

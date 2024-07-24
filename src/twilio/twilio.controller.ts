@@ -1,9 +1,10 @@
 import { Controller, Post, Body, Param } from "@nestjs/common";
 import { TwilioService } from './twilio.service';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateOtpDto, VerifyOtpDto } from "./dto/CreateOtpDto";
 
 @Controller('twilio')
+@ApiTags('Twilio 📞 ')
 export class TwilioController {
   constructor(private readonly twilioService: TwilioService) {}
 
