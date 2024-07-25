@@ -5,6 +5,7 @@ import {features } from "./index";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./users/entities";
 import { Otp } from "./twilio/entities";
+import { ConfigModule } from "@nestjs/config";
 
 
 @Module({
@@ -18,7 +19,7 @@ import { Otp } from "./twilio/entities";
       database: 'dialDB',
       entities: [User,Otp],
       synchronize: true,
-    }),
+    }),ConfigModule.forRoot({ isGlobal: true}),
     ...features,
   ],
   controllers: [AppController],
