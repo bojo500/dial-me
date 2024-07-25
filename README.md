@@ -4,7 +4,7 @@
 
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
-### This app powrod by NestJs
+### This app powered by NestJs 🚀
   <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
     <p align="center">
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
@@ -23,9 +23,9 @@
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 
-# Dial Me
+# Dial Me 📞
 
-## Table of Contents
+### Table of Contents
 
 1. [Project Overview](#project-overview)
 2. [Installation](#installation)
@@ -44,7 +44,7 @@ Dial Me is a comprehensive application that allows users to send SMS messages,
 make phone calls, and handle OTP (One Time Password) verification using Twilio's API.
 The application is built using NestJS for the backend and React for the frontend.
 
-## Installation
+## Installation 📋
 
 To install the project locally, follow these steps:
 
