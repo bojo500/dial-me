@@ -5,6 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Otp } from "./entities";
 import { UsersService } from "../users/users.service";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class TwilioService {
@@ -78,11 +79,15 @@ export class TwilioService {
 
   async sendOtp(userId: number, phoneNumber: string): Promise<void> {
     try {
-      const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit OTP
-      await this.usersService.updatePhoneNumberAndOtp(userId, phoneNumber, otp);
+      const plainOtp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit OTP
+      const hashedOtp = await bcrypt.hash(plainOtp, 10);
 
+      const otpEntity = this.otpRepo.create({ phoneNumber, otp: hashedOtp, userId });
+      await this.otpRepo.save(otpEntity);
+
+      // Send plainOtp to the user via SMS (not the hashedOtp)
       await this.client.messages.create({
-        body: `Your OTP code is ${otp}`,
+        body: `Your OTP code is ${plainOtp}`,
         from: this.fromPhoneNumber,
         to: phoneNumber,
       });
@@ -93,13 +98,27 @@ export class TwilioService {
   }
 
   async verifyOtp(userId: number, otp: string): Promise<boolean> {
-    const otpRecord = await this.usersService.findOneByOtp(otp);
+    const otpRecord = await this.otpRepo.findOne({ where: { userId } });
+
     if (!otpRecord) {
       throw new NotFoundException('Invalid OTP');
     }
-    await this.usersService.updatePhoneNumberAndOtp(userId, otpRecord.phoneNumber, otpRecord.otp);
+
+    const isOtpValid = await bcrypt.compare(otp, otpRecord.otp);
+
+    if (!isOtpValid) {
+      throw new NotFoundException('Invalid OTP');
+    }
+
+    await this.usersService.updatePhoneNumber(userId, otpRecord.phoneNumber);
+    await this.otpRepo.remove(otpRecord);
     return true;
   }
+
+
+
+
+
 
 
 }

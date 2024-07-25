@@ -12,8 +12,11 @@ import { Repository } from "typeorm";
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) public repository: Repository<User>) {
-  }
+  constructor(
+    @InjectRepository(User)
+    private readonly repository: Repository<User>,
+  ) {}
+
 
   async create(createUserDto: CreateUserDto) {
     try {
@@ -45,22 +48,14 @@ export class UsersService {
     };
   }
 
+
+
   async findOne(id: number): Promise<User> {
-    return await this.repository.findOne({ where:{id} });
+    return await this.repository.findOne({ where: { id } });
   }
 
-  async findOneByOtp(otp: string): Promise<User> {
-    return await this.repository.findOne({ where: { otp } });
-  }
-
-  async updatePhoneNumberAndOtp(userId: number, phoneNumber: string, otp: string): Promise<User> {
-    let user = await this.repository.findOne({ where: { id: userId } });
-    if (user) {
-      user.phoneNumber = phoneNumber;
-      user.otp = otp;
-      return await this.repository.save(user);
-    }
-    throw new Error('User not found');
+  async updatePhoneNumber(userId: number, phoneNumber: string): Promise<void> {
+    await this.repository.update(userId, { phoneNumber });
   }
 
   findAll() {

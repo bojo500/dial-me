@@ -1,5 +1,6 @@
-import { Column, Entity } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
 import { CoreEntity } from "../../core";
+import { Otp } from "../../twilio/entities";
 
 
 @Entity()
@@ -17,8 +18,7 @@ export class User  extends CoreEntity{
   @Column({ nullable: true })
   phoneNumber: string;
 
-  @Column({ nullable: true })
-  otp: string;
-
+  @OneToMany(() => Otp, otp => otp.user)
+  otps: Otp[];
 }
 
