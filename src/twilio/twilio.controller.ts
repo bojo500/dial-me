@@ -1,7 +1,9 @@
-import { Controller, Post, Body, Param } from "@nestjs/common";
+import { Controller, Post, Body, Param, Res } from "@nestjs/common";
 import { TwilioService } from './twilio.service';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { CreateOtpDto, VerifyOtpDto } from "./dto/CreateOtpDto";
+import { CreateOtpDto, VerifyOtpDto } from "./dto";
+import { Response } from 'express';
+
 
 @Controller('twilio')
 @ApiTags('Twilio 📞 ')
@@ -23,10 +25,7 @@ export class TwilioController {
         sid: { type: 'string', example: 'SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' }
       }
     }})
-  async sendSms(
-    @Body('to') to: string,
-    @Body('body') body: string,
-  ): Promise<{ sid: string }> {
+  async sendSms(@Body('to') to: string, @Body('body') body: string,): Promise<{ sid: string }> {
     const sid = await this.twilioService.sendSms(to, body);
     return { sid };
   }
@@ -52,9 +51,11 @@ export class TwilioController {
     @Body('from') from: string,
     @Body('url') url: string,
   ): Promise<{ sid: string }> {
-    const sid = await this.twilioService.makeCall(to, from, url);
-    return {sid};
+    const webhookUrl = 'http://localhost:9000/twilio/voice'; // Replace with your actual webhook URL
+    const sid = await this.twilioService.makeCall(to, from, webhookUrl);
+    return { sid };
   }
+
 
   @Post('hangup')
   @ApiOperation({ summary: 'Handle hangup' })
@@ -63,28 +64,17 @@ export class TwilioController {
     return this.twilioService.createHangupResponse();
   }
 
-  @Post('create-call')
-  @ApiOperation({ summary: 'Create a call' })
-  @ApiBody({ schema: {
-      type: 'object',
-      properties: {
-        to: { type: 'string', example: '+1234567890', description: 'Recipient phone number' },
-        url: { type: 'string', example: 'http://demo.twilio.com/docs/voice.xml', description: 'URL for Twilio Voice XML' },
-      }
-    }})
-  @ApiResponse({ status: 201, description: 'Call created successfully', schema: {
-      type: 'object',
-      properties: {
-        sid: { type: 'string', example: 'CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' }
-      }
-    }})
-  async createCall(
-    @Body('to') to: string,
-    @Body('url') url: string,
-  ): Promise<{ sid: string }> {
-    const sid = await this.twilioService.createCall(to, url);
-    console.log(to ,url, sid);
-    return { sid };
+  @Post('voice')
+  handleVoiceCall(@Body() body: any, @Res() res: Response) {
+    const twiml = `
+      <Response>
+        <Dial>
+          <Client>your-app-client-id</Client>
+        </Dial>
+      </Response>
+    `;
+    res.set('Content-Type', 'text/xml');
+    res.send(twiml);
   }
 
   @Post('send-otp/:userId')

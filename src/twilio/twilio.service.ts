@@ -31,21 +31,6 @@ export class TwilioService {
     this.client = Twilio(accountSid, authToken);
   }
 
-  async sendSms(to: string, body: string): Promise<string> {
-    try {
-      const message = await this.client.messages.create({
-        body,
-        from: this.fromPhoneNumber,
-        to,
-      });
-      return message.sid;
-    } catch (error) {
-      this.logger.error(`Failed to send SMS: ${error.message}`);
-      throw new Error(`Failed to send SMS: ${error.message}`);
-    }
-  }
-
-
   async makeCall(to: string, from: string, url: string): Promise<string> {
     const call = await this.client.calls.create({
       to,
@@ -61,21 +46,19 @@ export class TwilioService {
     return response.toString();
   }
 
-
-  async createCall(to: string, url: string): Promise<string> {
+  async sendSms(to: string, body: string): Promise<string> {
     try {
-      const call = await this.client.calls.create({
+      const message = await this.client.messages.create({
+        body,
         from: this.fromPhoneNumber,
         to,
-        url,
       });
-      return call.sid;
+      return message.sid;
     } catch (error) {
-      this.logger.error(`Failed to create call: ${error.message}`);
-      throw new Error(`Failed to create call: ${error.message}`);
+      this.logger.error(`Failed to send SMS: ${error.message}`);
+      throw new Error(`Failed to send SMS: ${error.message}`);
     }
   }
-
 
   async sendOtp(userId: number, phoneNumber: string): Promise<void> {
     try {
