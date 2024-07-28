@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, Res } from "@nestjs/common";
+import { Controller, Post, Body, Param, Res, HttpException, HttpStatus } from "@nestjs/common";
 import { TwilioService } from './twilio.service';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateOtpDto, VerifyOtpDto } from "./dto";
@@ -46,14 +46,18 @@ export class TwilioController {
         sid: { type: 'string', example: 'CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' }
       }
     }})
+  @Post('make-call')
   async makeCall(
     @Body('to') to: string,
     @Body('from') from: string,
     @Body('url') url: string,
   ): Promise<{ sid: string }> {
-    const webhookUrl = 'http://localhost:9000/twilio/voice'; // Replace with your actual webhook URL
-    const sid = await this.twilioService.makeCall(to, from, webhookUrl);
-    return { sid };
+    try {
+      const sid = await this.twilioService.makeCall(to, from, url);
+      return { sid };
+    } catch (error) {
+      throw new HttpException('Failed to make call', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
 

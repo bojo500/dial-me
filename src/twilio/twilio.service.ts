@@ -32,12 +32,13 @@ export class TwilioService {
   }
 
   async makeCall(to: string, from: string, url: string): Promise<string> {
-    const call = await this.client.calls.create({
-      to,
-      from,
-      url,
-    });
-    return call.sid;
+    try {
+      const call = await this.client.calls.create({ to, from, url });
+      return call.sid;
+    } catch (error) {
+      console.error('Twilio makeCall error:', error);
+      throw new Error('Failed to make call');
+    }
   }
 
   createHangupResponse(): string {
