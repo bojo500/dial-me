@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "main": "dist/main.js",
   "description": "Dial Me is a comprehensive application that allows users to send SMS messages, make phone calls, and handle OTP (One Time Password) verification using Twilio's API. The application is built using NestJS for the backend and React for the frontend.\n\n",
-  "author": "",
+  "author": "Mohamed Khaled",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
