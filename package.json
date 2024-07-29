@@ -1,14 +1,15 @@
 {
   "name": "dial-me",
   "version": "0.0.1",
-  "description": "",
+  "main": "dist/main.js",
+  "description": "Dial Me is a comprehensive application that allows users to send SMS messages, make phone calls, and handle OTP (One Time Password) verification using Twilio's API. The application is built using NestJS for the backend and React for the frontend.\n\n",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build --output public",
+    "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "node dist/main.js",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
