@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://your-repository-url.git'
+                git branch: 'main', url: 'https://github.com/bojo500/dial-me.git'
             }
         }
         stage('Build Docker Image') {
