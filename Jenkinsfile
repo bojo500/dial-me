@@ -10,7 +10,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def appImage = docker.build("your-app-image-name")
+                    def appImage = docker.build("dial-me")
                 }
             }
         }
