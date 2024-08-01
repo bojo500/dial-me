@@ -1,10 +1,8 @@
+
 services:
   nestjs:
     image: dial-me
     container_name: nestjs
-    build:
-      context: .
-      dockerfile: Dockerfile
     ports:
       - "9000:9000"
     depends_on:
@@ -16,8 +14,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: dialDB
-      MYSQL_USER: root
-      MYSQL_PASSWORD: password
     ports:
       - '8886:3306'
 
