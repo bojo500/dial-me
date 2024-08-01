@@ -1,41 +1,28 @@
+
 services:
+  nestjs:
+    image: dial-me
+    container_name: nestjs
+    ports:
+      - "9000:9000"
+    depends_on:
+      - db
+
   db:
     image: mysql
     container_name: db
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: dialDB
-      MYSQL_USER: root
-      MYSQL_PASSWORD: password
-    restart: always
     ports:
       - '8886:3306'
-    volumes:
-      - dbdata:/var/lib/mysql
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: pma
-    links:
-      - db
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
       PMA_ARBITRARY: 1
-    restart: always
     ports:
       - '8899:80'
-
-  nestjs:
-    image: dial-me
-    container_name: nestjs
-    ports:
-      - '9000:9000'
-    depends_on:
-      - db
-    environment:
-      DATABASE_HOST: db
-      DATABASE_PORT: 3306
-
-volumes:
-  dbdata:

@@ -1,23 +1,20 @@
-# Use the official Node.js image
+# Use the official Node.js image.
 FROM node:18
 
-# Set the working directory
+# Create and change to the app directory.
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
+# Copy application dependency manifests.
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install production dependencies.
+RUN npm install --only=production
 
-# Copy the rest of the application files
+# Copy the application code.
 COPY . .
 
-# Build the application
+# Build the application.
 RUN npm run build
 
-# Expose the port
-EXPOSE 9000
-
-# Start the application
+# Start the application.
 CMD ["npm", "run", "start:prod"]
