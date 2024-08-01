@@ -4,6 +4,8 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AppService } from "./app.service";
 import { AppController } from "./app.controller";
 import { features } from "./index";
+import { User } from "./users/entities";
+import { Otp } from "./twilio/entities";
 
 @Module({
   imports: [
@@ -19,7 +21,7 @@ import { features } from "./index";
         username: configService.get<string>('DATABASE_USER'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
-        entities: [__dirname + '/../**/*.entity.{js,ts}'],
+        entities: [User,Otp],
         synchronize: true,
       }),
       inject: [ConfigService],
