@@ -1,13 +1,6 @@
 
-services:
-  nestjs:
-    image: dial-me
-    container_name: nestjs
-    ports:
-      - "9000:9000"
-    depends_on:
-      - db
 
+services:
   db:
     image: mysql
     container_name: db
@@ -16,13 +9,25 @@ services:
       MYSQL_DATABASE: dialDB
     ports:
       - '8886:3306'
-
+    volumes:
+      - dbdata:/var/lib/mysql
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: pma
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
-      PMA_ARBITRARY: 1
     ports:
       - '8899:80'
+  nestjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nestjs
+    ports:
+      - '9000:9000'
+    depends_on:
+      - db
+
+volumes:
+  dbdata:
