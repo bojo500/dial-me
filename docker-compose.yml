@@ -1,4 +1,3 @@
-
 services:
   db:
     image: mysql
@@ -28,12 +27,15 @@ services:
       - '8899:80'
 
   nestjs:
-    image: dial-me:latest
+    image: dial-me
     container_name: nestjs
     ports:
       - '9000:9000'
     depends_on:
       - db
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 3306
 
 volumes:
   dbdata:

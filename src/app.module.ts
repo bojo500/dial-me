@@ -16,7 +16,7 @@ import { ConfigModule } from "@nestjs/config";
       port: 8886,
       username: 'root',
       password: 'password',
-      database: 'DB',
+      database: 'dialDB',
       entities: [User,Otp],
       synchronize: true,
     }),ConfigModule.forRoot({ isGlobal: true}),
