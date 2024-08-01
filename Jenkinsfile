@@ -10,21 +10,35 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def appImage = docker.build("dial-me")
+                    def appImage = docker.build("dial-me:${env.BUILD_ID}")
                 }
             }
         }
         stage('Run Docker Compose') {
             steps {
-                sh 'docker-compose down'
-                sh 'docker-compose up -d --build'
+                script {
+                    sh 'sudo docker-compose down'
+                    sh 'sudo docker-compose up -d --build'
+                }
             }
         }
     }
     post {
         always {
             script {
-                sh 'docker-compose down'
+                sh 'sudo docker-compose down'
+            }
+        }
+    }
+}
+pipeline {
+    agent any
+
+    stages {
+        stage('Test Docker') {
+            steps {
+                sh 'sudo docker --version'
+                sh 'sudo docker-compose --version'
             }
         }
     }
