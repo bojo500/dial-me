@@ -2,6 +2,12 @@ pipeline {
     agent any
 
     stages {
+        stage('Test Docker') {
+            steps {
+                sh 'sudo docker --version'
+                sh 'sudo docker-compose --version'
+            }
+        }
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/bojo500/dial-me.git'
