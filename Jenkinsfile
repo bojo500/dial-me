@@ -31,15 +31,3 @@ pipeline {
         }
     }
 }
-pipeline {
-    agent any
-
-    stages {
-        stage('Test Docker') {
-            steps {
-                sh 'sudo docker --version'
-                sh 'sudo docker-compose --version'
-            }
-        }
-    }
-}
