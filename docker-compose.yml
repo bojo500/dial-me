@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   db:
     image: mysql:5.7
@@ -14,11 +12,10 @@ services:
       - '8886:3306'
     volumes:
       - dbdata:/var/lib/mysql
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: pma
-    links:
-      - db
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
@@ -26,5 +23,6 @@ services:
     restart: always
     ports:
       - '8899:80'
+
 volumes:
   dbdata:
