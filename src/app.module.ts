@@ -10,12 +10,12 @@ import { Otp } from "./twilio/entities";
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 8886,
-      username: 'admin',
-      password: '^1Wr04yB!NF8',
-      database: 'dialDB',
-      entities: [User,Otp],
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT, 10) || 3306,
+      username: process.env.DB_USERNAME || 'root',
+      password: process.env.DB_PASSWORD || 'password',
+      database: process.env.DB_NAME || 'test',
+      entities: [User, Otp],
       synchronize: true,
       logging: true,
     }),
@@ -24,5 +24,4 @@ import { Otp } from "./twilio/entities";
   controllers: [AppController],
   providers: [AppService]
 })
-export class AppModule {
-}
+export class AppModule {}

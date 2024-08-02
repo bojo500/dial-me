@@ -51,10 +51,10 @@ pipeline {
             }
         }
         success {
-                    discordSend description: "**Build:** [${currentBuild.id}](${env.BUILD_URL})\n**Status:** [${currentBuild.currentResult}](${env.BUILD_URL})", footer: 'Dial Me Jenkins', link: env.BUILD_URL, successful: true, title: "${env.JOB_NAME} #${currentBuild.id}", webhookURL: 'https://discord.com/api/webhooks/1268945527136059413/DG9HN_allnFaTW4NE_IwwzjtgDdd0G9vVduFRFitjH1iUptej1vH7Y05QlnKuIHnjudX'
+                    discordSend description: "**Build:** [${currentBuild.id}](${env.BUILD_URL})\n**Status:** [${currentBuild.currentResult}](${env.BUILD_URL})", footer: 'Dial Me Jenkins', link: env.BUILD_URL, successful: true, title: "${env.JOB_NAME} #${currentBuild.id}", webhookURL: 'https://discord.com/api/webhooks/1268953673224945664/z4Q7PAY_mI2qWmxK7lHxVHSIU4GtfIIL40kVBUZL5htFMigt3Ed2LT9LCvn6fgu_Dh2y'
         }
         failure {
-                    discordSend description: "**Build:** [${currentBuild.id}](${env.BUILD_URL})\n**Status:** [${currentBuild.currentResult}](${env.BUILD_URL})", footer: 'Dial Me Jenkins', link: env.BUILD_URL, successful: true, title: "${env.JOB_NAME} #${currentBuild.id}", webhookURL: 'https://discord.com/api/webhooks/1268945527136059413/DG9HN_allnFaTW4NE_IwwzjtgDdd0G9vVduFRFitjH1iUptej1vH7Y05QlnKuIHnjudX'
+                    discordSend description: "**Build:** [${currentBuild.id}](${env.BUILD_URL})\n**Status:** [${currentBuild.currentResult}](${env.BUILD_URL})", footer: 'Dial Me Jenkins', link: env.BUILD_URL, successful: true, title: "${env.JOB_NAME} #${currentBuild.id}", webhookURL: 'https://discord.com/api/webhooks/1268953673224945664/z4Q7PAY_mI2qWmxK7lHxVHSIU4GtfIIL40kVBUZL5htFMigt3Ed2LT9LCvn6fgu_Dh2y'
         }
     }
 }

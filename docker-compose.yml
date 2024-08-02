@@ -1,19 +1,26 @@
+version: '3'
 services:
   app:
+    image: dial-me:23
     ports:
       - "9000:9000"
-
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USERNAME=admin
+      - DB_PASSWORD=^1Wr04yB!NF8
+      - DB_NAME=dialDB
   db:
     image: mysql:5.7
-    container_name: db
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: dialDB
       MYSQL_USER: admin
-      MYSQL_PASSWORD: ^1Wr04yB!NF8
-    restart: always
+      MYSQL_PASSWORD: '^1Wr04yB!NF8'
     ports:
-      - '8886:3306'
+      - "8886:3306"
     volumes:
       - dbdata:/var/lib/mysql
 
