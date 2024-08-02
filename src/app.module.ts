@@ -17,6 +17,7 @@ import { Otp } from "./twilio/entities";
       database: 'dialDB',
       entities: [User,Otp],
       synchronize: true,
+      logging: true,
     }),
     ...features,
   ],

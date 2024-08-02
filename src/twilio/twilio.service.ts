@@ -1,5 +1,5 @@
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
-import * as Twilio from 'twilio';
+import Twilio from 'twilio';
 import { twiml } from "twilio";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -27,7 +27,6 @@ export class TwilioService {
     if (!accountSid || !authToken || !this.fromPhoneNumber) {
       throw new Error('Twilio credentials are not set in environment variables');
     }
-
     this.client = Twilio(accountSid, authToken);
   }
 
