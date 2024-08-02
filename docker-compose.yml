@@ -1,7 +1,7 @@
 version: '3'
 services:
   app:
-    image: dial-me:23
+    image: dial-me:24
     ports:
       - "9000:9000"
     depends_on:
