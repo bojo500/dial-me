@@ -4,8 +4,8 @@ pipeline {
     stages {
         stage('Test Docker') {
             steps {
-                sh 'sudo docker --version'
-                sh 'sudo docker-compose --version'
+                sh 'docker --version'
+                sh 'docker-compose --version'
             }
         }
         stage('Checkout') {
@@ -23,8 +23,8 @@ pipeline {
         stage('Run Docker Compose') {
             steps {
                 script {
-                    sh 'sudo docker-compose down'
-                    sh 'sudo docker-compose up -d --build'
+                    sh 'docker-compose down'
+                    sh 'docker-compose up -d --build'
                 }
             }
         }
@@ -32,7 +32,7 @@ pipeline {
     post {
         always {
             script {
-                sh 'sudo docker-compose down'
+                sh 'docker-compose down'
             }
         }
     }
