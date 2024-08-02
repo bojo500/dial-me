@@ -2,7 +2,6 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { VersioningType } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 dotenv.config();
@@ -20,11 +19,11 @@ async function bootstrap() {
   SwaggerModule.setup('swagger', app, document)
 
   app.enableCors({
-    // origin: 'http://localhost:3001',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
-  });  app.enableVersioning({
-    type: VersioningType.URI,
+  //   // origin: 'http://localhost:3001',
+  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  //   credentials: true,
+  // });  app.enableVersioning({
+  //   type: VersioningType.URI,
   });
 
   await app.listen(port);
