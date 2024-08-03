@@ -62,4 +62,6 @@ pipeline {
         }
         failure {
             discordSend description: "**Build:** [${currentBuild.id}](${env.BUILD_URL})\n**Status:** [${currentBuild.currentResult}](${env.BUILD_URL})", footer: 'Dial Me Jenkins', link: env.BUILD_URL, successful: false, title: "${env.JOB_NAME} #${currentBuild.id}", webhookURL: 'https://discord.com/api/webhooks/1269246128486879252/xRrmbK9383xkCZ56A1DA1qWZ8S7WICIzVEDRK1GtLcENuvQ1pP7zThHXa3TUmsXV1LiV'
-
+        }
+    }
+}
