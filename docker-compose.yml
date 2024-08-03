@@ -1,9 +1,9 @@
-version: '3'
+version: '3.8'
 services:
   app:
-    image: dial-me:24
+    image: dial-me:latest
     ports:
-      - "9000:9000"
+      - "9001:9000"
     depends_on:
       - db
     environment:
@@ -12,6 +12,12 @@ services:
       - DB_USERNAME=admin
       - DB_PASSWORD=^1Wr04yB!NF8
       - DB_NAME=dialDB
+      - NODE_ENV=development
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
+    env_file:
+      - .env
   db:
     image: mysql:5.7
     environment:
@@ -23,7 +29,6 @@ services:
       - "8886:3306"
     volumes:
       - dbdata:/var/lib/mysql
-
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: pma
@@ -34,6 +39,5 @@ services:
     restart: always
     ports:
       - '8899:80'
-
 volumes:
   dbdata:
