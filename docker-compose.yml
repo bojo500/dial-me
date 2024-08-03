@@ -1,7 +1,7 @@
-version: '3'
+version: '3.8'
 services:
   app:
-    image: dial-me:24
+    image: dial-me:latest
     ports:
       - "9001:9000"
     depends_on:
@@ -29,7 +29,6 @@ services:
       - "8886:3306"
     volumes:
       - dbdata:/var/lib/mysql
-
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: pma
@@ -40,6 +39,5 @@ services:
     restart: always
     ports:
       - '8899:80'
-
 volumes:
   dbdata:
