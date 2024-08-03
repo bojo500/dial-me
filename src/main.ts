@@ -7,14 +7,13 @@ dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const port = process.env.PORT || 9001;
 
+  const port = process.env.PORT || 9001;
   const config = new DocumentBuilder()
       .setTitle('Dial Me Open API 🚀')
       .setDescription('Dial Me API description 📋')
       .setVersion('1.0')
       .build();
-
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);
 
