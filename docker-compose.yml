@@ -1,32 +1,23 @@
-version: '3.8'
+version: '3'
 services:
-  app:
-    image: dial-me:latest
-    environment:
-      - TWILIO_ACCOUNT_SID
-      - TWILIO_AUTH_TOKEN
-      - TWILIO_PHONE_NUMBER
-    ports:
-      - "3000:3000"
-  pma:
-    image: phpmyadmin/phpmyadmin
-    ports:
-      - "8080:80"
   db:
-
-    image: mysql:5.7
+    image: mysql
+    container_name: db
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: dialDB
       MYSQL_USER: admin
-      MYSQL_PASSWORD: '^1Wr04yB!NF8'
+      MYSQL_PASSWORD: ^1Wr04yB!NF8
+    restart: always
     ports:
-      - "8886:3306"
+      - '8886:3306'
     volumes:
       - dbdata:/var/lib/mysql
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: pma
+    links:
+      - db
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
