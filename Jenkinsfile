@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "dial-me:${env.BUILD_ID}"
+        DOCKER_IMAGE = "dial-me:latest"
     }
 
     stages {
@@ -29,9 +29,7 @@ pipeline {
     }
     post {
         always {
-            script {
-                sh 'docker-compose down || true'
-            }
+            echo "Pipeline completed."
         }
         success {
             echo "Build succeeded!"
