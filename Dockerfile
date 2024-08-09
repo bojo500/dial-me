@@ -1,20 +1,25 @@
-# Use the official Node.js image.
+# Base image
 FROM node:18
 
-# Create and change to the app directory.
+# Create and set working directory
 WORKDIR /usr/src/app
 
-# Copy application dependency manifests.
+# Install app dependencies
 COPY package*.json ./
 
-# Install production dependencies.
-RUN npm install --only=production
+RUN npm install
 
-# Copy the application code.
+# Rebuild bcrypt
+RUN npm rebuild bcrypt --build-from-source
+
+# Copy app source code
 COPY . .
 
-# Build the application.
+# Build the app
 RUN npm run build
 
-# Start the application.
+# Expose port
+EXPOSE 3000
+
+# Command to run the app
 CMD ["npm", "run", "start:prod"]
