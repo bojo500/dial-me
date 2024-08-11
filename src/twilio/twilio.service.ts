@@ -10,24 +10,54 @@ import * as bcrypt from "bcrypt";
 @Injectable()
 export class TwilioService {
   private readonly logger = new Logger(TwilioService.name);
-  private client: Twilio.Twilio;
+  private readonly client: Twilio.Twilio;
   private readonly fromPhoneNumber: string;
 
   constructor(
-    @InjectRepository(Otp)
-    private otpRepo: Repository<Otp>,
-    private usersService: UsersService,
+      @InjectRepository(Otp)
+      private otpRepo: Repository<Otp>,
+      private usersService: UsersService,
   ) {
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
     this.fromPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
-    this.logger.debug(`TWILIO_ACCOUNT_SID: ${accountSid}`);
-    this.logger.debug(`TWILIO_AUTH_TOKEN: ${authToken ? 'Set' : 'Not Set'}`);
-    this.logger.debug(`TWILIO_PHONE_NUMBER: ${this.fromPhoneNumber}`);
+
     if (!accountSid || !authToken || !this.fromPhoneNumber) {
       throw new Error('Twilio credentials are not set in environment variables');
     }
+
     this.client = Twilio(accountSid, authToken);
+
+    this.logger.debug(`TWILIO_ACCOUNT_SID: ${accountSid}`);
+    this.logger.debug(`TWILIO_AUTH_TOKEN: ${authToken ? 'Set' : 'Not Set'}`);
+    this.logger.debug(`TWILIO_PHONE_NUMBER: ${this.fromPhoneNumber}`);
+  }
+
+  public generateAccessToken(identity: string): string {
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const apiKeySid = process.env.TWILIO_API_KEY_SID;
+    const apiSecret = process.env.TWILIO_API_SECRET;
+
+    if (!accountSid || !apiKeySid || !apiSecret) {
+      throw new Error('Twilio API Key SID or API Secret is not set in environment variables');
+    }
+
+    const token = new Twilio.jwt.AccessToken(
+        accountSid,
+        apiKeySid,
+        apiSecret,
+        {
+          identity: identity,
+          ttl: 3600 // Token time-to-live in seconds
+        }
+    );
+
+    const voiceGrant = new Twilio.jwt.AccessToken.VoiceGrant({
+      incomingAllow: true,
+    });
+    token.addGrant(voiceGrant);
+
+    return token.toJwt();
   }
 
   async makeCall(to: string, from: string, url: string): Promise<string> {
@@ -35,14 +65,51 @@ export class TwilioService {
       const call = await this.client.calls.create({ to, from, url });
       return call.sid;
     } catch (error) {
-      console.error('Twilio makeCall error:', error);
+      this.logger.error('Twilio makeCall error:', error);
       throw new Error('Failed to make call');
     }
   }
 
-  createHangupResponse(): string {
+  async generateToken(identity: string): Promise<string> {
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const apiKeySid = process.env.TWILIO_API_KEY_SID;
+    const apiSecret = process.env.TWILIO_API_SECRET;
+
+    if (!accountSid || !apiKeySid || !apiSecret) {
+      throw new Error('Twilio API Key SID or API Secret is not set in environment variables');
+    }
+
+    const token = new Twilio.jwt.AccessToken(
+        accountSid,
+        apiKeySid,
+        apiSecret,
+        {
+          identity: identity,
+          ttl: 3600 // Token time-to-live in seconds
+        }
+    );
+
+    const grant = new Twilio.jwt.AccessToken.VideoGrant();
+    token.addGrant(grant);
+
+    return token.toJwt();
+  }
+
+  async hangupCall(callSid: string): Promise<void> {
+    try {
+      await this.client.calls(callSid).update({ status: 'completed' });
+    } catch (error) {
+      this.logger.error('Twilio hangupCall error:', error);
+      throw new Error('Failed to hang up call');
+    }
+  }
+
+  generateTwiMLResponse(): string {
     const response = new twiml.VoiceResponse();
-    response.hangup();
+    response.say('This is a test call');
+    response.dial({
+      answerOnBridge: true,
+    }).client('client-name'); // The client name should match with the frontend client name
     return response.toString();
   }
 
@@ -55,8 +122,13 @@ export class TwilioService {
       });
       return message.sid;
     } catch (error) {
-      this.logger.error(`Failed to send SMS: ${error.message}`);
-      throw new Error(`Failed to send SMS: ${error.message}`);
+      if (error instanceof Error) {
+        this.logger.error(`Failed to send SMS: ${error.message}`);
+        throw new Error(`Failed to send SMS: ${error.message}`);
+      } else {
+        this.logger.error('Failed to send SMS: Unknown error');
+        throw new Error('Failed to send SMS: Unknown error');
+      }
     }
   }
 
@@ -68,14 +140,13 @@ export class TwilioService {
       const otpEntity = this.otpRepo.create({ phoneNumber, otp: hashedOtp, userId });
       await this.otpRepo.save(otpEntity);
 
-      // Send plainOtp to the user via SMS (not the hashedOtp)
       await this.client.messages.create({
         body: `Your OTP code is ${plainOtp}`,
         from: this.fromPhoneNumber,
         to: phoneNumber,
       });
     } catch (error) {
-      console.error('Error sending OTP:', error);
+      this.logger.error('Error sending OTP:', error);
       throw new Error('Failed to send OTP');
     }
   }
@@ -97,12 +168,4 @@ export class TwilioService {
     await this.otpRepo.remove(otpRecord);
     return true;
   }
-
-
-
-
-
-
-
 }
-

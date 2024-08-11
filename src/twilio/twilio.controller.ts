@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, Res, HttpException, HttpStatus } from "@nestjs/common";
+import {Controller, Post, Body, Param, Res, HttpException, HttpStatus} from "@nestjs/common";
 import { TwilioService } from './twilio.service';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateOtpDto, VerifyOtpDto } from "./dto";
@@ -8,7 +8,8 @@ import { Response } from 'express';
 @Controller('twilio')
 @ApiTags('Twilio 📞 ')
 export class TwilioController {
-  constructor(private readonly twilioService: TwilioService) {}
+  constructor(private readonly twilioService: TwilioService,
+  ) {}
 
   @Post('send-sms')
   @ApiOperation({ summary: 'Send an SMS message' })
@@ -30,7 +31,6 @@ export class TwilioController {
     return { sid };
   }
 
-  @Post('make-call')
   @ApiOperation({ summary: 'Make a phone call' })
   @ApiBody({ schema: {
       type: 'object',
@@ -48,9 +48,9 @@ export class TwilioController {
     }})
   @Post('make-call')
   async makeCall(
-    @Body('to') to: string,
-    @Body('from') from: string,
-    @Body('url') url: string,
+      @Body('to') to: string,
+      @Body('from') from: string,
+      @Body('url') url: string,
   ): Promise<{ sid: string }> {
     try {
       const sid = await this.twilioService.makeCall(to, from, url);
@@ -60,25 +60,33 @@ export class TwilioController {
     }
   }
 
-
   @Post('hangup')
-  @ApiOperation({ summary: 'Handle hangup' })
-  @ApiResponse({ status: 200, description: 'Hangup response created' })
-  handleHangup(): string {
-    return this.twilioService.createHangupResponse();
+  async hangup(@Body('callSid') callSid: string, @Res() res: Response) {
+    try {
+      await this.twilioService.hangupCall(callSid);
+      return res.status(200).json({ message: 'Call ended successfully' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Failed to end call' });
+    }
   }
 
   @Post('voice')
-  handleVoiceCall(@Body() body: any, @Res() res: Response) {
-    const twiml = `
-      <Response>
-        <Dial>
-          <Client>your-app-client-id</Client>
-        </Dial>
-      </Response>
-    `;
+  handleIncomingCall(@Res() res: Response): void {
+    const twiml = this.twilioService.generateTwiMLResponse();
     res.set('Content-Type', 'text/xml');
     res.send(twiml);
+  }
+
+  @Post('token')
+  async getToken(@Body('identity') identity: string): Promise<{ token: string }> {
+    try {
+      const token = await this.twilioService.generateToken(identity);
+      return { token };
+    } catch (error) {
+      console.error('Error generating Twilio token:', error);
+      throw new HttpException('Failed to fetch Twilio token', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Post('send-otp/:userId')
