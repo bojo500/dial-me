@@ -59,50 +59,30 @@ export class TwilioService {
       throw new Error(`Failed to send SMS: ${error.message}`);
     }
   }
-
   async sendOtp(userId: number, phoneNumber: string): Promise<void> {
     try {
-      const plainOtp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit OTP
+      await this.otpRepo.update({ userId }, { deletedAt: new Date() });
+      const plainOtp = Math.floor(100000 + Math.random() * 900000).toString();
       const hashedOtp = await bcrypt.hash(plainOtp, 10);
-
       const otpEntity = this.otpRepo.create({ phoneNumber, otp: hashedOtp, userId });
       await this.otpRepo.save(otpEntity);
-
-      // Send plainOtp to the user via SMS (not the hashedOtp)
       await this.client.messages.create({
         body: `Your OTP code is ${plainOtp}`,
         from: this.fromPhoneNumber,
         to: phoneNumber,
       });
-    } catch (error) {
-      console.error('Error sending OTP:', error);
-      throw new Error('Failed to send OTP');
     }
+    catch (error) {throw new Error('Failed to send OTP');}
   }
-
   async verifyOtp(userId: number, otp: string): Promise<boolean> {
-    const otpRecord = await this.otpRepo.findOne({ where: { userId } });
-
-    if (!otpRecord) {
-      throw new NotFoundException('Invalid OTP');
-    }
-
+    const otpRecord = await this.otpRepo.findOne({ where: { userId, deletedAt: null } });
+    if (!otpRecord) {throw new NotFoundException('OTP not found or expired');}
     const isOtpValid = await bcrypt.compare(otp, otpRecord.otp);
-
-    if (!isOtpValid) {
-      throw new NotFoundException('Invalid OTP');
-    }
-
+    if (!isOtpValid) {throw new NotFoundException('Invalid OTP');}
     await this.usersService.updatePhoneNumber(userId, otpRecord.phoneNumber);
     await this.otpRepo.remove(otpRecord);
     return true;
   }
-
-
-
-
-
-
 
 }
 

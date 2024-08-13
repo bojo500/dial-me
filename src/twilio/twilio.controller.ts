@@ -1,8 +1,7 @@
-import { Controller, Post, Body, Param, Res, HttpException, HttpStatus } from "@nestjs/common";
+import { Controller, Post, Body, Param, HttpException, HttpStatus } from "@nestjs/common";
 import { TwilioService } from './twilio.service';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateOtpDto, VerifyOtpDto } from "./dto";
-import { Response } from 'express';
 
 
 @Controller('twilio')
@@ -53,6 +52,7 @@ export class TwilioController {
     @Body('url') url: string,
   ): Promise<{ sid: string }> {
     try {
+
       const sid = await this.twilioService.makeCall(to, from, url);
       return { sid };
     } catch (error) {
@@ -60,25 +60,11 @@ export class TwilioController {
     }
   }
 
-
   @Post('hangup')
   @ApiOperation({ summary: 'Handle hangup' })
   @ApiResponse({ status: 200, description: 'Hangup response created' })
   handleHangup(): string {
     return this.twilioService.createHangupResponse();
-  }
-
-  @Post('voice')
-  handleVoiceCall(@Body() body: any, @Res() res: Response) {
-    const twiml = `
-      <Response>
-        <Dial>
-          <Client>your-app-client-id</Client>
-        </Dial>
-      </Response>
-    `;
-    res.set('Content-Type', 'text/xml');
-    res.send(twiml);
   }
 
   @Post('send-otp/:userId')
