@@ -1,17 +1,17 @@
 import {
-  Controller,
-  Get,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  Post,
+  Get,
+  HttpStatus,
   InternalServerErrorException,
-  HttpStatus
+  Param,
+  Patch,
+  Post
 } from "@nestjs/common";
-import { UsersService } from "./users.service";
-import { CreateUserDto, UpdateUserDto } from "./dto";
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {UsersService} from "./users.service";
+import {CreateUserDto, UpdateUserDto} from "./dto";
+import {ApiBearerAuth, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 
 @Controller("users")
 @ApiTags('User 👤')
@@ -53,8 +53,7 @@ export class UsersController {
   @ApiResponse({status: HttpStatus.OK, description: "Operation success"})
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     try {
-      const result = await this.usersService.update(+id, updateUserDto);
-      return result;
+      return await this.usersService.update(+id, updateUserDto);
     } catch (error) {
       console.error('Error updating user:', error);
       throw new InternalServerErrorException('Failed to update user');

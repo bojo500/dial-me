@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
+import cors from 'cors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 dotenv.config();
@@ -8,6 +9,12 @@ dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(cors({
+    origin: ['http://localhost:3000', 'http://mo.com:3000'],
+    optionsSuccessStatus: 200,
+    methods: 'GET,POST',
+    allowedHeaders: 'Content-Type,Authorization',
+  }));
   const port = process.env.PORT || 9001;
 
   const config = new DocumentBuilder()
